@@ -13,27 +13,29 @@ for frm in br.forms():
   formcount=formcount+1
 
 br.select_form(nr=formcount)
-br.form['USER'] = '1355885'
-br.form['PASSWORD'] = 'Chayan#107'
+br.form['USER'] = 'username'
+br.form['PASSWORD'] = 'password'
 br.submit()
 
 response = br.open(my_url).read()
 page_soup = BeautifulSoup(response)
-containers = page_soup.findAll("tr", {"class": "dtgAlternatingItemStyle"})
+containers = page_soup.findAll("tr", {"class": "dtgItemStyle"})
+container1 = page_soup.findAll("tr", {"class": "dtgAlternatingItemStyle"})
 container2 = page_soup.findAll("span", {"id": "ucPageHeader1_lblWelcome"})
 
-for row in containers:
-	row_td = row.findAll('td')
+row_td = ["" for x in range(2*int(len(containers)))]
+for row in range(int(len(containers))):
+	row_td[row] = containers[row].findAll('td')
+	row_td[row+2] = container1[row].findAll('td')
 
-arr = ["" for x in range(int(len(row_td)))]
-for i in range(int(len(row_td))):
-	if(row_td[i].text):
-		arr[i] = row_td[i].text
-
-arr = filter(None, arr)
-with open('ticket.csv', 'w') as csvFile:
+with open('ticket3.csv', 'w') as csvFile:
 	writer = csv.writer(csvFile)
-	writer.writerow(arr)
+	for i in range(int(len(row_td))):
+		arr = [""]
+		for j in row_td[i]:
+			arr.append(j.text)
+			arr = filter(None, arr)
+		writer.writerow(arr)	
 
 print(container2[0].text)
 print("CSV file generated!")
